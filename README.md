@@ -61,6 +61,8 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 The app screen also includes controls for showing/hiding overlay buttons, enabling volume double-click gestures, adjusting overlay opacity, and resetting the dragged overlay position.
 
+The app also exposes launcher shortcuts for **Skip forward** and **Skip back**. These are intended for experiments with Pixel Quick Tap or launchers that can run app shortcuts.
+
 If Android shows a separate floating Accessibility shortcut button, disable that shortcut target in Android Accessibility settings. The service can remain enabled without the shortcut.
 
 ## Notes

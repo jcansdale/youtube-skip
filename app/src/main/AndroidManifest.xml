@@ -16,6 +16,20 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity>
+
+        <activity
+            android:name=".SkipShortcutActivity"
+            android:exported="true"
+            android:theme="@style/NoDisplayTheme">
+            <intent-filter>
+                <action android:name="dev.jcansdale.youtubeskip.SKIP_FORWARD" />
+                <action android:name="dev.jcansdale.youtubeskip.SKIP_BACK" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
         <service

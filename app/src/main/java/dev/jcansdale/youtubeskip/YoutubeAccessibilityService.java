@@ -37,6 +37,10 @@ public class YoutubeAccessibilityService extends AccessibilityService {
         }
     }
 
+    public static boolean isConnected() {
+        return activeService != null;
+    }
+
     @Override
     protected void onServiceConnected() {
         activeService = this;
