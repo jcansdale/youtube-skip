@@ -1,4 +1,4 @@
-package dev.cansdale.youtubeskip;
+package dev.jcansdale.youtubeskip;
 
 import android.app.Service;
 import android.content.Context;
@@ -19,9 +19,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class OverlayService extends Service {
-    private static final String ACTION_SHOW = "dev.cansdale.youtubeskip.SHOW";
-    private static final String ACTION_SHOW_TEST = "dev.cansdale.youtubeskip.SHOW_TEST";
-    private static final String ACTION_HIDE = "dev.cansdale.youtubeskip.HIDE";
+    private static final String ACTION_SHOW = "dev.jcansdale.youtubeskip.SHOW";
+    private static final String ACTION_SHOW_TEST = "dev.jcansdale.youtubeskip.SHOW_TEST";
+    private static final String ACTION_HIDE = "dev.jcansdale.youtubeskip.HIDE";
     private static final long TEST_OVERLAY_DURATION_MS = 1_000;
 
     private WindowManager windowManager;

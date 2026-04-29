@@ -1,4 +1,4 @@
-package dev.cansdale.youtubeskip;
+package dev.jcansdale.youtubeskip;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;

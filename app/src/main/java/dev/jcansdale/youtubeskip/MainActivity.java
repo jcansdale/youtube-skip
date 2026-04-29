@@ -1,4 +1,4 @@
-package dev.cansdale.youtubeskip;
+package dev.jcansdale.youtubeskip;
 
 import android.app.Activity;
 import android.content.ComponentName;
