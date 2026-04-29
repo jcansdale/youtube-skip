@@ -78,7 +78,7 @@ public class OverlayService extends Service {
     }
 
     private void showOverlay() {
-        if (!Settings.canDrawOverlays(this) || overlayView != null) {
+        if (!Settings.canDrawOverlays(this) || !AppSettings.overlayButtonsEnabled(this) || overlayView != null) {
             return;
         }
 
@@ -87,6 +87,7 @@ public class OverlayService extends Service {
         controls.setGravity(Gravity.CENTER);
         controls.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         controls.setElevation(dp(8));
+        controls.setAlpha(AppSettings.overlayOpacity(this) / 100f);
 
         controls.addView(skipButton("-10", "Skip back", view -> YoutubeAccessibilityService.skipBackward()));
         controls.addView(skipButton("+10", "Skip forward", view -> YoutubeAccessibilityService.skipForward()));
@@ -99,8 +100,8 @@ public class OverlayService extends Service {
                 PixelFormat.TRANSLUCENT
         );
         params.gravity = Gravity.END | Gravity.CENTER_VERTICAL;
-        params.x = dp(18);
-        params.y = 0;
+        params.x = AppSettings.overlayX(this, getResources().getDisplayMetrics().density);
+        params.y = AppSettings.overlayY(this, getResources().getDisplayMetrics().density);
 
         overlayView = controls;
         windowManager.addView(overlayView, params);
@@ -177,6 +178,8 @@ public class OverlayService extends Service {
                     case MotionEvent.ACTION_UP:
                         if (!moved) {
                             touchedView.performClick();
+                        } else {
+                            AppSettings.setOverlayPosition(OverlayService.this, params.x, params.y);
                         }
                         return true;
                     default:

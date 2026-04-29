@@ -49,7 +49,10 @@ public class YoutubeAccessibilityService extends AccessibilityService {
 
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
-        if (event.getAction() != KeyEvent.ACTION_DOWN || event.getRepeatCount() > 0 || !isYoutubeFocused()) {
+        if (!AppSettings.volumeDoubleClickEnabled(this)
+                || event.getAction() != KeyEvent.ACTION_DOWN
+                || event.getRepeatCount() > 0
+                || !isYoutubeFocused()) {
             return false;
         }
 

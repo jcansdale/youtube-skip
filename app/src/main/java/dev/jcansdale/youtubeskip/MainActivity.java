@@ -13,6 +13,9 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +29,10 @@ public class MainActivity extends Activity {
     private Button overlayButton;
     private Button accessibilityButton;
     private Button testButton;
+    private Switch overlayButtonsSwitch;
+    private Switch volumeDoubleClickSwitch;
+    private TextView opacityStatus;
+    private SeekBar opacitySlider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,11 +66,61 @@ public class MainActivity extends Activity {
         accessibilityButton.setOnClickListener(view -> openAccessibilitySettings());
         root.addView(accessibilityButton, fullWidthWrapHeight());
 
+        overlayButtonsSwitch = switchView("Show overlay buttons");
+        overlayButtonsSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            AppSettings.setOverlayButtonsEnabled(this, isChecked);
+            OverlayService.hide(this);
+            updateStatus();
+        });
+        root.addView(overlayButtonsSwitch, fullWidthWrapHeight());
+
+        volumeDoubleClickSwitch = switchView("Volume double-click");
+        volumeDoubleClickSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            AppSettings.setVolumeDoubleClickEnabled(this, isChecked);
+            updateStatus();
+        });
+        root.addView(volumeDoubleClickSwitch, fullWidthWrapHeight());
+
+        opacityStatus = statusView();
+        root.addView(opacityStatus, fullWidthWrapHeight());
+
+        opacitySlider = new SeekBar(this);
+        opacitySlider.setMax(60);
+        opacitySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int opacity = 40 + progress;
+                AppSettings.setOverlayOpacity(MainActivity.this, opacity);
+                opacityStatus.setText("Overlay opacity: " + opacity + "%");
+                OverlayService.hide(MainActivity.this);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+        root.addView(opacitySlider, fullWidthWrapHeight());
+
+        Button resetPositionButton = button("Reset overlay position");
+        resetPositionButton.setOnClickListener(view -> {
+            AppSettings.resetOverlayPosition(this);
+            OverlayService.hide(this);
+            Toast.makeText(this, "Overlay position reset", Toast.LENGTH_SHORT).show();
+        });
+        root.addView(resetPositionButton, fullWidthWrapHeight());
+
         testButton = button("Show test button");
         testButton.setOnClickListener(view -> OverlayService.showForTest(this));
         root.addView(testButton, fullWidthWrapHeight());
 
-        setContentView(root);
+        ScrollView scrollView = new ScrollView(this);
+        scrollView.setBackgroundColor(Color.rgb(248, 250, 252));
+        scrollView.addView(root);
+        setContentView(scrollView);
     }
 
     @Override
@@ -81,7 +138,12 @@ public class MainActivity extends Activity {
         overlayButton.setEnabled(!canDrawOverlays);
         accessibilityButton.setText(accessibilityEnabled ? "Accessibility enabled" : "Open accessibility settings");
         accessibilityButton.setEnabled(!accessibilityEnabled);
-        testButton.setEnabled(canDrawOverlays);
+        overlayButtonsSwitch.setChecked(AppSettings.overlayButtonsEnabled(this));
+        volumeDoubleClickSwitch.setChecked(AppSettings.volumeDoubleClickEnabled(this));
+        int opacity = AppSettings.overlayOpacity(this);
+        opacityStatus.setText("Overlay opacity: " + opacity + "%");
+        opacitySlider.setProgress(opacity - 40);
+        testButton.setEnabled(canDrawOverlays && AppSettings.overlayButtonsEnabled(this));
     }
 
     private void openOverlaySettings() {
@@ -180,6 +242,15 @@ public class MainActivity extends Activity {
         button.setText(label);
         button.setAllCaps(false);
         return button;
+    }
+
+    private Switch switchView(String label) {
+        Switch switchView = new Switch(this);
+        switchView.setText(label);
+        switchView.setTextSize(16);
+        switchView.setTextColor(Color.rgb(15, 23, 42));
+        switchView.setPadding(0, dp(6), 0, dp(6));
+        return switchView;
     }
 
     private LinearLayout.LayoutParams fullWidthWrapHeight() {
