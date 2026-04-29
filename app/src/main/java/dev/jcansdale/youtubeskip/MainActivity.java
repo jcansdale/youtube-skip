@@ -129,6 +129,12 @@ public class MainActivity extends Activity {
         updateStatus();
     }
 
+    @Override
+    protected void onPause() {
+        OverlayService.hideTest(this);
+        super.onPause();
+    }
+
     private void updateStatus() {
         boolean canDrawOverlays = Settings.canDrawOverlays(this);
         boolean accessibilityEnabled = isAccessibilityServiceEnabled();

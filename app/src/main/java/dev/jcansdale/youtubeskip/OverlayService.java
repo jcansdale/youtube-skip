@@ -20,6 +20,7 @@ public class OverlayService extends Service {
     private static final String ACTION_SHOW = "dev.jcansdale.youtubeskip.SHOW";
     private static final String ACTION_TOGGLE_TEST = "dev.jcansdale.youtubeskip.TOGGLE_TEST";
     private static final String ACTION_REFRESH = "dev.jcansdale.youtubeskip.REFRESH";
+    private static final String ACTION_HIDE_TEST = "dev.jcansdale.youtubeskip.HIDE_TEST";
     private static final String ACTION_HIDE = "dev.jcansdale.youtubeskip.HIDE";
 
     private WindowManager windowManager;
@@ -38,6 +39,11 @@ public class OverlayService extends Service {
 
     public static void hide(Context context) {
         Intent intent = new Intent(context, OverlayService.class).setAction(ACTION_HIDE);
+        context.startService(intent);
+    }
+
+    public static void hideTest(Context context) {
+        Intent intent = new Intent(context, OverlayService.class).setAction(ACTION_HIDE_TEST);
         context.startService(intent);
     }
 
@@ -62,6 +68,8 @@ public class OverlayService extends Service {
             toggleTestOverlay();
         } else if (ACTION_REFRESH.equals(action)) {
             refreshOverlay();
+        } else if (ACTION_HIDE_TEST.equals(action)) {
+            hideTestOverlay();
         } else {
             hideOverlay();
         }
@@ -147,6 +155,14 @@ public class OverlayService extends Service {
         }
         windowManager.removeView(overlayView);
         overlayView = null;
+    }
+
+    private void hideTestOverlay() {
+        if (testModeUntilMillis <= SystemClock.uptimeMillis()) {
+            return;
+        }
+        testModeUntilMillis = 0;
+        hideOverlay();
     }
 
     private void refreshOverlay() {
