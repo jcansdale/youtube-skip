@@ -19,6 +19,7 @@ import android.widget.TextView;
 public class OverlayService extends Service {
     private static final String ACTION_SHOW = "dev.jcansdale.youtubeskip.SHOW";
     private static final String ACTION_TOGGLE_TEST = "dev.jcansdale.youtubeskip.TOGGLE_TEST";
+    private static final String ACTION_REFRESH = "dev.jcansdale.youtubeskip.REFRESH";
     private static final String ACTION_HIDE = "dev.jcansdale.youtubeskip.HIDE";
 
     private WindowManager windowManager;
@@ -40,6 +41,11 @@ public class OverlayService extends Service {
         context.startService(intent);
     }
 
+    public static void refresh(Context context) {
+        Intent intent = new Intent(context, OverlayService.class).setAction(ACTION_REFRESH);
+        context.startService(intent);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -54,6 +60,8 @@ public class OverlayService extends Service {
             showOverlay();
         } else if (ACTION_TOGGLE_TEST.equals(action)) {
             toggleTestOverlay();
+        } else if (ACTION_REFRESH.equals(action)) {
+            refreshOverlay();
         } else {
             hideOverlay();
         }
@@ -139,6 +147,18 @@ public class OverlayService extends Service {
         }
         windowManager.removeView(overlayView);
         overlayView = null;
+    }
+
+    private void refreshOverlay() {
+        if (overlayView == null) {
+            return;
+        }
+
+        overlayView.setAlpha(AppSettings.overlayOpacity(this) / 100f);
+        WindowManager.LayoutParams params = (WindowManager.LayoutParams) overlayView.getLayoutParams();
+        params.x = AppSettings.overlayX(this, getResources().getDisplayMetrics().density);
+        params.y = AppSettings.overlayY(this, getResources().getDisplayMetrics().density);
+        windowManager.updateViewLayout(overlayView, params);
     }
 
     private void addDragHandle(View view) {

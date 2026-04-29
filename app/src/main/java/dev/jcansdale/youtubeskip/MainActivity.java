@@ -92,7 +92,7 @@ public class MainActivity extends Activity {
                 int opacity = 40 + progress;
                 AppSettings.setOverlayOpacity(MainActivity.this, opacity);
                 opacityStatus.setText("Overlay opacity: " + opacity + "%");
-                OverlayService.hide(MainActivity.this);
+                OverlayService.refresh(MainActivity.this);
             }
 
             @Override
@@ -108,7 +108,7 @@ public class MainActivity extends Activity {
         Button resetPositionButton = button("Reset overlay position");
         resetPositionButton.setOnClickListener(view -> {
             AppSettings.resetOverlayPosition(this);
-            OverlayService.hide(this);
+            OverlayService.refresh(this);
             Toast.makeText(this, "Overlay position reset", Toast.LENGTH_SHORT).show();
         });
         root.addView(resetPositionButton, fullWidthWrapHeight());
