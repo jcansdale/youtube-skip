@@ -6,12 +6,16 @@ The app uses Android Accessibility to detect YouTube and dispatch the same doubl
 
 - `+10` taps the right side of the video player.
 - `-10` taps the left side of the video player.
+- Double-click volume up attempts to skip forward while YouTube is focused.
+- Double-click volume down attempts to skip back while YouTube is focused.
 
 The actual seek amount follows YouTube's own **Double-tap to seek** setting. The labels assume YouTube's default 10 second seek interval.
 
 ## Status
 
 This is a small experimental utility tested on a Pixel 8. It currently supports portrait playback and fullscreen landscape playback.
+
+Volume-button double-click support is experimental because Android may reserve volume keys for system volume handling on some devices or states.
 
 ## Permissions
 

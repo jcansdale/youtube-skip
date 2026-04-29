@@ -8,6 +8,7 @@ import android.graphics.Point;
 import android.util.Log;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityEvent;
@@ -19,7 +20,10 @@ public class YoutubeAccessibilityService extends AccessibilityService {
     private static final String TAG = "YoutubeSkipOverlay";
     private static final String YOUTUBE_PACKAGE = "com.google.android.youtube";
     private static final String SYSTEM_UI_PACKAGE = "com.android.systemui";
+    private static final long VOLUME_DOUBLE_CLICK_MS = 450;
     private static YoutubeAccessibilityService activeService;
+    private long lastVolumeUpDownTime;
+    private long lastVolumeDownDownTime;
 
     public static void skipForward() {
         if (activeService != null) {
@@ -38,8 +42,40 @@ public class YoutubeAccessibilityService extends AccessibilityService {
         activeService = this;
         AccessibilityServiceInfo info = getServiceInfo();
         info.flags |= AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
+        info.flags |= AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS;
         setServiceInfo(info);
         updateOverlayForFocusedWindow(null);
+    }
+
+    @Override
+    protected boolean onKeyEvent(KeyEvent event) {
+        if (event.getAction() != KeyEvent.ACTION_DOWN || event.getRepeatCount() > 0 || !isYoutubeFocused()) {
+            return false;
+        }
+
+        long eventTime = event.getEventTime();
+        switch (event.getKeyCode()) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if (isDoubleClick(eventTime, lastVolumeUpDownTime)) {
+                    lastVolumeUpDownTime = 0;
+                    Log.d(TAG, "volume double-click skip forward");
+                    skipForward();
+                    return true;
+                }
+                lastVolumeUpDownTime = eventTime;
+                return false;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if (isDoubleClick(eventTime, lastVolumeDownDownTime)) {
+                    lastVolumeDownDownTime = 0;
+                    Log.d(TAG, "volume double-click skip back");
+                    skipBackward();
+                    return true;
+                }
+                lastVolumeDownDownTime = eventTime;
+                return false;
+            default:
+                return false;
+        }
     }
 
     @Override
@@ -86,6 +122,15 @@ public class YoutubeAccessibilityService extends AccessibilityService {
             Log.d(TAG, "hide overlay for package=" + packageName);
             OverlayService.hide(this);
         }
+    }
+
+    private boolean isYoutubeFocused() {
+        CharSequence packageName = focusedPackageName();
+        return YOUTUBE_PACKAGE.contentEquals(packageName == null ? "" : packageName);
+    }
+
+    private boolean isDoubleClick(long eventTime, long lastEventTime) {
+        return lastEventTime > 0 && eventTime - lastEventTime <= VOLUME_DOUBLE_CLICK_MS;
     }
 
     private CharSequence focusedPackageName() {
