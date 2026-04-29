@@ -6,6 +6,4 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">#F8FAFC</item>
     </style>
-
-    <style name="NoDisplayTheme" parent="android:style/Theme.NoDisplay" />
 </resources>

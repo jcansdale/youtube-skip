@@ -20,6 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
+    public static final String ACTION_SKIP_FORWARD = "dev.jcansdale.youtubeskip.SKIP_FORWARD";
+    public static final String ACTION_SKIP_BACK = "dev.jcansdale.youtubeskip.SKIP_BACK";
+
     private static final String ACTION_MANAGE_APP_OVERLAY_PERMISSION = "android.settings.MANAGE_APP_OVERLAY_PERMISSION";
     private static final String ACTION_ACCESSIBILITY_DETAILS_SETTINGS = "android.settings.ACCESSIBILITY_DETAILS_SETTINGS";
     private static final String EXTRA_ACCESSIBILITY_COMPONENT_NAME = "android.provider.extra.ACCESSIBILITY_COMPONENT_NAME";
@@ -37,6 +40,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (handleShortcutIntent(getIntent())) {
+            finish();
+            return;
+        }
 
         int padding = dp(24);
         LinearLayout root = new LinearLayout(this);
@@ -121,6 +128,24 @@ public class MainActivity extends Activity {
         scrollView.setBackgroundColor(Color.rgb(248, 250, 252));
         scrollView.addView(root);
         setContentView(scrollView);
+    }
+
+    private boolean handleShortcutIntent(Intent intent) {
+        String action = intent == null ? null : intent.getAction();
+        if (!ACTION_SKIP_FORWARD.equals(action) && !ACTION_SKIP_BACK.equals(action)) {
+            return false;
+        }
+
+        if (ACTION_SKIP_BACK.equals(action)) {
+            YoutubeAccessibilityService.skipBackward();
+        } else {
+            YoutubeAccessibilityService.skipForward();
+        }
+
+        if (!YoutubeAccessibilityService.isConnected()) {
+            Toast.makeText(this, "Enable YouTube Skip Overlay accessibility service", Toast.LENGTH_SHORT).show();
+        }
+        return true;
     }
 
     @Override
