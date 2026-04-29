@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">YouTube Skip Overlay</string>
+    <string name="accessibility_service_description">Shows a skip button while YouTube is open and taps the video seek area when pressed.</string>
+</resources>
