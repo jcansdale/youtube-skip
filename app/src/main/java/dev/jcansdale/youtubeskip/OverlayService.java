@@ -7,8 +7,6 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.GradientDrawable;
 import android.os.IBinder;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.view.Gravity;
@@ -20,13 +18,11 @@ import android.widget.TextView;
 
 public class OverlayService extends Service {
     private static final String ACTION_SHOW = "dev.jcansdale.youtubeskip.SHOW";
-    private static final String ACTION_SHOW_TEST = "dev.jcansdale.youtubeskip.SHOW_TEST";
+    private static final String ACTION_TOGGLE_TEST = "dev.jcansdale.youtubeskip.TOGGLE_TEST";
     private static final String ACTION_HIDE = "dev.jcansdale.youtubeskip.HIDE";
-    private static final long TEST_OVERLAY_DURATION_MS = 1_000;
 
     private WindowManager windowManager;
     private View overlayView;
-    private Handler handler;
     private long testModeUntilMillis;
 
     public static void show(Context context) {
@@ -34,8 +30,8 @@ public class OverlayService extends Service {
         context.startService(intent);
     }
 
-    public static void showForTest(Context context) {
-        Intent intent = new Intent(context, OverlayService.class).setAction(ACTION_SHOW_TEST);
+    public static void toggleForTest(Context context) {
+        Intent intent = new Intent(context, OverlayService.class).setAction(ACTION_TOGGLE_TEST);
         context.startService(intent);
     }
 
@@ -48,7 +44,6 @@ public class OverlayService extends Service {
     public void onCreate() {
         super.onCreate();
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        handler = new Handler(Looper.getMainLooper());
     }
 
     @Override
@@ -57,8 +52,8 @@ public class OverlayService extends Service {
         if (ACTION_SHOW.equals(action)) {
             testModeUntilMillis = 0;
             showOverlay();
-        } else if (ACTION_SHOW_TEST.equals(action)) {
-            showTestOverlay();
+        } else if (ACTION_TOGGLE_TEST.equals(action)) {
+            toggleTestOverlay();
         } else {
             hideOverlay();
         }
@@ -124,14 +119,15 @@ public class OverlayService extends Service {
         return button;
     }
 
-    private void showTestOverlay() {
-        testModeUntilMillis = SystemClock.uptimeMillis() + TEST_OVERLAY_DURATION_MS;
-        showOverlay();
-        handler.removeCallbacksAndMessages(null);
-        handler.postDelayed(() -> {
+    private void toggleTestOverlay() {
+        if (testModeUntilMillis > SystemClock.uptimeMillis() && overlayView != null) {
             testModeUntilMillis = 0;
             hideOverlay();
-        }, TEST_OVERLAY_DURATION_MS);
+            return;
+        }
+
+        testModeUntilMillis = Long.MAX_VALUE;
+        showOverlay();
     }
 
     private void hideOverlay() {

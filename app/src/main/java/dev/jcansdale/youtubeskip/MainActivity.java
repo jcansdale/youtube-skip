@@ -113,8 +113,8 @@ public class MainActivity extends Activity {
         });
         root.addView(resetPositionButton, fullWidthWrapHeight());
 
-        testButton = button("Show test button");
-        testButton.setOnClickListener(view -> OverlayService.showForTest(this));
+        testButton = button("Toggle test button");
+        testButton.setOnClickListener(view -> OverlayService.toggleForTest(this));
         root.addView(testButton, fullWidthWrapHeight());
 
         ScrollView scrollView = new ScrollView(this);
