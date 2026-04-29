@@ -21,6 +21,11 @@
                 android:resource="@xml/shortcuts" />
         </activity>
 
+        <activity
+            android:name=".SkipShortcutActivity"
+            android:exported="true"
+            android:theme="@style/NoDisplayTheme" />
+
         <service
             android:name=".OverlayService"
             android:exported="false" />

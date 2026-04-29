@@ -8,7 +8,7 @@
         <intent
             android:action="dev.jcansdale.youtubeskip.SKIP_FORWARD"
             android:targetPackage="dev.jcansdale.youtubeskip"
-            android:targetClass="dev.jcansdale.youtubeskip.MainActivity" />
+            android:targetClass="dev.jcansdale.youtubeskip.SkipShortcutActivity" />
     </shortcut>
 
     <shortcut
@@ -20,6 +20,6 @@
         <intent
             android:action="dev.jcansdale.youtubeskip.SKIP_BACK"
             android:targetPackage="dev.jcansdale.youtubeskip"
-            android:targetClass="dev.jcansdale.youtubeskip.MainActivity" />
+            android:targetClass="dev.jcansdale.youtubeskip.SkipShortcutActivity" />
     </shortcut>
 </shortcuts>
