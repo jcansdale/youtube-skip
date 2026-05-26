@@ -9,7 +9,9 @@ The app uses Android Accessibility to detect YouTube and dispatch the same doubl
 - Double-click volume up attempts to skip forward while YouTube is focused.
 - Double-click volume down attempts to skip back while YouTube is focused.
 
-The actual seek amount follows YouTube's own **Double-tap to seek** setting. The labels assume YouTube's default 10 second seek interval.
+It also includes an experimental **auto skip ahead** feature. When notification access is enabled, the app watches YouTube's media session, resolves YouTube's Smart Skip / Jump Ahead metadata when available, and automatically seeks to YouTube's target when playback enters the cue range. A short boing sound plays when an automatic skip happens.
+
+The manual gesture seek amount follows YouTube's own **Double-tap to seek** setting. The labels assume YouTube's default 10 second seek interval.
 
 ## Status
 
@@ -19,10 +21,11 @@ Volume-button double-click support is experimental because Android may reserve v
 
 ## Permissions
 
-The app requires two Android permissions that must be enabled by the user:
+The app uses Android permissions/features that must be enabled by the user:
 
 - **Display over other apps**: draws the floating skip controls above YouTube.
 - **Accessibility service**: detects when YouTube is active and performs the double-tap gestures.
+- **Notification access**: reads YouTube's active media session so auto skip ahead can prefetch metadata and seek to the Smart Skip target.
 
 The Accessibility service is limited to foreground-window detection and gesture dispatch. It does not collect, store, or transmit video, account, or browsing data.
 
@@ -56,8 +59,9 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 1. Open **YouTube Skip Overlay**.
 2. Enable **Display over other apps**.
 3. Enable the **YouTube Skip Overlay** Accessibility service.
-4. Open YouTube and play a video.
-5. Use the floating `-10` and `+10` buttons.
+4. Enable **Notification access** for automatic Smart Skip / Jump Ahead.
+5. Open YouTube and play a video.
+6. Use the floating `-10` and `+10` buttons, or let auto skip ahead trigger when Smart Skip metadata is available.
 
 The app screen also includes controls for showing/hiding overlay buttons, enabling volume double-click gestures, adjusting overlay opacity, and resetting the dragged overlay position.
 
