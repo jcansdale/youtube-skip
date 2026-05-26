@@ -14,7 +14,7 @@ public final class AppSettings {
 
     private static final boolean DEFAULT_OVERLAY_BUTTONS_ENABLED = true;
     private static final boolean DEFAULT_VOLUME_DOUBLE_CLICK_ENABLED = true;
-    private static final boolean DEFAULT_AUTO_SKIP_AHEAD_ENABLED = false;
+    private static final boolean DEFAULT_AUTO_SKIP_AHEAD_ENABLED = true;
     private static final int DEFAULT_OVERLAY_OPACITY = 85;
     private static final int DEFAULT_OVERLAY_X_DP = 18;
     private static final int DEFAULT_OVERLAY_Y_DP = 0;
