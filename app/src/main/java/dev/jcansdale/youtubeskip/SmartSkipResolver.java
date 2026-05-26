@@ -37,6 +37,9 @@ final class SmartSkipResolver {
     }
 
     static void prefetch(Context context) {
+        if (!AppSettings.autoSkipAheadEnabled(context)) {
+            return;
+        }
         MediaSessionSkipController.PlaybackInfo info = validPlaybackInfo(context);
         if (info == null) {
             return;
@@ -49,6 +52,9 @@ final class SmartSkipResolver {
     }
 
     static boolean tryAutoSmartSkip(Context context) {
+        if (!AppSettings.autoSkipAheadEnabled(context)) {
+            return false;
+        }
         MediaSessionSkipController.PlaybackInfo info = validPlaybackInfo(context);
         if (info == null) {
             return false;

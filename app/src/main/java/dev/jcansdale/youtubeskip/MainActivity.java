@@ -36,6 +36,7 @@ public class MainActivity extends Activity {
     private Button testButton;
     private Switch overlayButtonsSwitch;
     private Switch volumeDoubleClickSwitch;
+    private Switch autoSkipAheadSwitch;
     private TextView opacityStatus;
     private SeekBar opacitySlider;
 
@@ -95,6 +96,16 @@ public class MainActivity extends Activity {
             updateStatus();
         });
         root.addView(volumeDoubleClickSwitch, fullWidthWrapHeight());
+
+        autoSkipAheadSwitch = switchView("Auto skip ahead");
+        autoSkipAheadSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            AppSettings.setAutoSkipAheadEnabled(this, isChecked);
+            if (isChecked) {
+                SmartSkipResolver.prefetch(this);
+            }
+            updateStatus();
+        });
+        root.addView(autoSkipAheadSwitch, fullWidthWrapHeight());
 
         opacityStatus = statusView();
         root.addView(opacityStatus, fullWidthWrapHeight());
@@ -183,6 +194,8 @@ public class MainActivity extends Activity {
         accessibilityButton.setEnabled(!accessibilityEnabled);
         overlayButtonsSwitch.setChecked(AppSettings.overlayButtonsEnabled(this));
         volumeDoubleClickSwitch.setChecked(AppSettings.volumeDoubleClickEnabled(this));
+        autoSkipAheadSwitch.setChecked(AppSettings.autoSkipAheadEnabled(this));
+        autoSkipAheadSwitch.setEnabled(notificationListenerEnabled);
         int opacity = AppSettings.overlayOpacity(this);
         opacityStatus.setText("Overlay opacity: " + opacity + "%");
         opacitySlider.setProgress(opacity - 40);

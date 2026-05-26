@@ -9,7 +9,7 @@ The app uses Android Accessibility to detect YouTube and dispatch the same doubl
 - Double-click volume up attempts to skip forward while YouTube is focused.
 - Double-click volume down attempts to skip back while YouTube is focused.
 
-It also includes an experimental **auto skip ahead** feature. When notification access is enabled, the app watches YouTube's media session, resolves YouTube's Smart Skip / Jump Ahead metadata when available, and automatically seeks to YouTube's target when playback enters the cue range. A short boing sound plays when an automatic skip happens.
+It also includes an optional experimental **auto skip ahead** feature. When enabled in the app settings and notification access is allowed, the app watches YouTube's media session, resolves YouTube's Smart Skip / Jump Ahead metadata when available, and automatically seeks to YouTube's target when playback enters the cue range. A short boing sound plays when an automatic skip happens.
 
 The manual gesture seek amount follows YouTube's own **Double-tap to seek** setting. The labels assume YouTube's default 10 second seek interval.
 
@@ -60,10 +60,11 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 2. Enable **Display over other apps**.
 3. Enable the **YouTube Skip Overlay** Accessibility service.
 4. Enable **Notification access** for automatic Smart Skip / Jump Ahead.
-5. Open YouTube and play a video.
-6. Use the floating `-10` and `+10` buttons, or let auto skip ahead trigger when Smart Skip metadata is available.
+5. Turn on **Auto skip ahead** in the app.
+6. Open YouTube and play a video.
+7. Use the floating `-10` and `+10` buttons, or let auto skip ahead trigger when Smart Skip metadata is available.
 
-The app screen also includes controls for showing/hiding overlay buttons, enabling volume double-click gestures, adjusting overlay opacity, and resetting the dragged overlay position.
+The app screen also includes controls for showing/hiding overlay buttons, enabling volume double-click gestures, enabling auto skip ahead, adjusting overlay opacity, and resetting the dragged overlay position.
 
 The app also exposes launcher shortcuts for **Skip forward** and **Skip back**. These are intended for experiments with Pixel Quick Tap or launchers that can run app shortcuts.
 

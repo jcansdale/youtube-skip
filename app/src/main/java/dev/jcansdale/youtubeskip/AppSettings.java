@@ -7,12 +7,14 @@ public final class AppSettings {
     private static final String PREFS_NAME = "youtube_skip_overlay";
     private static final String KEY_OVERLAY_BUTTONS_ENABLED = "overlay_buttons_enabled";
     private static final String KEY_VOLUME_DOUBLE_CLICK_ENABLED = "volume_double_click_enabled";
+    private static final String KEY_AUTO_SKIP_AHEAD_ENABLED = "auto_skip_ahead_enabled";
     private static final String KEY_OVERLAY_OPACITY = "overlay_opacity";
     private static final String KEY_OVERLAY_X = "overlay_x";
     private static final String KEY_OVERLAY_Y = "overlay_y";
 
     private static final boolean DEFAULT_OVERLAY_BUTTONS_ENABLED = true;
     private static final boolean DEFAULT_VOLUME_DOUBLE_CLICK_ENABLED = true;
+    private static final boolean DEFAULT_AUTO_SKIP_AHEAD_ENABLED = false;
     private static final int DEFAULT_OVERLAY_OPACITY = 85;
     private static final int DEFAULT_OVERLAY_X_DP = 18;
     private static final int DEFAULT_OVERLAY_Y_DP = 0;
@@ -34,6 +36,14 @@ public final class AppSettings {
 
     public static void setVolumeDoubleClickEnabled(Context context, boolean enabled) {
         prefs(context).edit().putBoolean(KEY_VOLUME_DOUBLE_CLICK_ENABLED, enabled).apply();
+    }
+
+    public static boolean autoSkipAheadEnabled(Context context) {
+        return prefs(context).getBoolean(KEY_AUTO_SKIP_AHEAD_ENABLED, DEFAULT_AUTO_SKIP_AHEAD_ENABLED);
+    }
+
+    public static void setAutoSkipAheadEnabled(Context context, boolean enabled) {
+        prefs(context).edit().putBoolean(KEY_AUTO_SKIP_AHEAD_ENABLED, enabled).apply();
     }
 
     public static int overlayOpacity(Context context) {

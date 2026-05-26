@@ -154,7 +154,7 @@ public class YoutubeNotificationListenerService extends NotificationListenerServ
 
     private void scheduleAutoSmartSkipPoll() {
         mainHandler.removeCallbacks(autoSmartSkipPoll);
-        if (youtubeController == null) return;
+        if (youtubeController == null || !AppSettings.autoSkipAheadEnabled(this)) return;
         PlaybackState state = youtubeController.getPlaybackState();
         if (state == null || state.getState() != PlaybackState.STATE_PLAYING) return;
         mainHandler.postDelayed(autoSmartSkipPoll, AUTO_SMART_SKIP_POLL_MS);
