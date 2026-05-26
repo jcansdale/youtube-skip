@@ -125,6 +125,7 @@ public class YoutubeAccessibilityService extends AccessibilityService {
         if (YOUTUBE_PACKAGE.contentEquals(packageName == null ? "" : packageName)) {
             Log.d(TAG, "show overlay for package=" + packageName);
             OverlayService.show(this);
+            SmartSkipResolver.prefetch(this);
         } else if (packageName != null && !SYSTEM_UI_PACKAGE.contentEquals(packageName)) {
             Log.d(TAG, "hide overlay for package=" + packageName);
             OverlayService.hide(this);

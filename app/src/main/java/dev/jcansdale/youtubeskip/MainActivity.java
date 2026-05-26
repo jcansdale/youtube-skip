@@ -28,12 +28,15 @@ public class MainActivity extends Activity {
     private static final String EXTRA_ACCESSIBILITY_COMPONENT_NAME = "android.provider.extra.ACCESSIBILITY_COMPONENT_NAME";
 
     private TextView overlayStatus;
+    private TextView notificationListenerStatus;
     private TextView accessibilityStatus;
     private Button overlayButton;
+    private Button notificationListenerButton;
     private Button accessibilityButton;
     private Button testButton;
     private Switch overlayButtonsSwitch;
     private Switch volumeDoubleClickSwitch;
+    private Switch autoSkipAheadSwitch;
     private TextView opacityStatus;
     private SeekBar opacitySlider;
 
@@ -61,13 +64,19 @@ public class MainActivity extends Activity {
         root.addView(title, fullWidthWrapHeight());
 
         overlayStatus = statusView();
+        notificationListenerStatus = statusView();
         accessibilityStatus = statusView();
         root.addView(overlayStatus, fullWidthWrapHeight());
+        root.addView(notificationListenerStatus, fullWidthWrapHeight());
         root.addView(accessibilityStatus, fullWidthWrapHeight());
 
         overlayButton = button("Allow overlay");
         overlayButton.setOnClickListener(view -> openOverlaySettings());
         root.addView(overlayButton, fullWidthWrapHeight());
+
+        notificationListenerButton = button("Open notification access settings");
+        notificationListenerButton.setOnClickListener(view -> openNotificationListenerSettings());
+        root.addView(notificationListenerButton, fullWidthWrapHeight());
 
         accessibilityButton = button("Open accessibility settings");
         accessibilityButton.setOnClickListener(view -> openAccessibilitySettings());
@@ -87,6 +96,16 @@ public class MainActivity extends Activity {
             updateStatus();
         });
         root.addView(volumeDoubleClickSwitch, fullWidthWrapHeight());
+
+        autoSkipAheadSwitch = switchView("Auto skip ahead");
+        autoSkipAheadSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            AppSettings.setAutoSkipAheadEnabled(this, isChecked);
+            if (isChecked) {
+                SmartSkipResolver.prefetch(this);
+            }
+            updateStatus();
+        });
+        root.addView(autoSkipAheadSwitch, fullWidthWrapHeight());
 
         opacityStatus = statusView();
         root.addView(opacityStatus, fullWidthWrapHeight());
@@ -162,15 +181,21 @@ public class MainActivity extends Activity {
 
     private void updateStatus() {
         boolean canDrawOverlays = Settings.canDrawOverlays(this);
+        boolean notificationListenerEnabled = isNotificationListenerEnabled();
         boolean accessibilityEnabled = isAccessibilityServiceEnabled();
         overlayStatus.setText(canDrawOverlays ? "Overlay permission: on" : "Overlay permission: off");
+        notificationListenerStatus.setText(notificationListenerEnabled ? "Notification access: on" : "Notification access: off");
         accessibilityStatus.setText(accessibilityEnabled ? "Accessibility service: on" : "Accessibility service: off");
         overlayButton.setText(canDrawOverlays ? "Overlay allowed" : "Allow overlay");
         overlayButton.setEnabled(!canDrawOverlays);
+        notificationListenerButton.setText(notificationListenerEnabled ? "Notification access enabled" : "Open notification access settings");
+        notificationListenerButton.setEnabled(!notificationListenerEnabled);
         accessibilityButton.setText(accessibilityEnabled ? "Accessibility enabled" : "Open accessibility settings");
         accessibilityButton.setEnabled(!accessibilityEnabled);
         overlayButtonsSwitch.setChecked(AppSettings.overlayButtonsEnabled(this));
         volumeDoubleClickSwitch.setChecked(AppSettings.volumeDoubleClickEnabled(this));
+        autoSkipAheadSwitch.setChecked(AppSettings.autoSkipAheadEnabled(this));
+        autoSkipAheadSwitch.setEnabled(notificationListenerEnabled);
         int opacity = AppSettings.overlayOpacity(this);
         opacityStatus.setText("Overlay opacity: " + opacity + "%");
         opacitySlider.setProgress(opacity - 40);
@@ -210,6 +235,14 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void openNotificationListenerSettings() {
+        Toast.makeText(this, "Turn on notification access for YouTube Skip Overlay", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
+        if (!startSettingsActivity(intent)) {
+            Toast.makeText(this, "Unable to open Notification access settings", Toast.LENGTH_LONG).show();
+        }
+    }
+
     private void openAccessibilitySettings() {
         Toast.makeText(this, "Turn on YouTube Skip Overlay in Accessibility", Toast.LENGTH_LONG).show();
 
@@ -240,20 +273,33 @@ public class MainActivity extends Activity {
         }
     }
 
+    private boolean isNotificationListenerEnabled() {
+        ComponentName expected = new ComponentName(this, YoutubeNotificationListenerService.class);
+        String enabledListeners = Settings.Secure.getString(
+                getContentResolver(),
+                "enabled_notification_listeners"
+        );
+        return containsFlattenedComponent(enabledListeners, expected);
+    }
+
     private boolean isAccessibilityServiceEnabled() {
         ComponentName expected = new ComponentName(this, YoutubeAccessibilityService.class);
         String enabledServices = Settings.Secure.getString(
                 getContentResolver(),
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
         );
-        if (TextUtils.isEmpty(enabledServices)) {
+        return containsFlattenedComponent(enabledServices, expected);
+    }
+
+    private boolean containsFlattenedComponent(String flattenedComponents, ComponentName expected) {
+        if (TextUtils.isEmpty(flattenedComponents)) {
             return false;
         }
         TextUtils.SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(':');
-        splitter.setString(enabledServices);
+        splitter.setString(flattenedComponents);
         while (splitter.hasNext()) {
-            ComponentName enabledService = ComponentName.unflattenFromString(splitter.next());
-            if (expected.equals(enabledService)) {
+            ComponentName enabledComponent = ComponentName.unflattenFromString(splitter.next());
+            if (expected.equals(enabledComponent)) {
                 return true;
             }
         }
